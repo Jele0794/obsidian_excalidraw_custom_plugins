@@ -1,20 +1,3 @@
-/*
-Custom Palm Guard: A mobile-friendly drawing mode for Excalidraw that prevents accidental palm touches by hiding UI controls and entering fullscreen mode. Perfect for drawing with a stylus on tablets.
-
-Features:
-- Enters fullscreen to maximize drawing space (configurable in plugin script settings)
-- Hides all UI controls to prevent accidental taps
-- Provides a minimal floating toolbar with toggle visibility button
-- Enables a completely distraction-free canvas even on desktop devices by hiding the main toolbar and all chrome while keeping a tiny movable toggle control (addresses immersive canvas / beyond Zen Mode request)
-- Draggable toolbar can be positioned anywhere on screen
-- Exit Palm Guard mode with a single tap
-- Press the hotkey you configured for this script in Obsidian's Hotkey settings (e.g., ALT+X) to toggle UI visibility; if no hotkey is set, use the on-screen toggle button.
-
-![Palm Guard Script](https://youtu.be/A_udjVjgWN0)
-
-```js
-*/
-
 if(!ea.verifyMinimumPluginVersion || !ea.verifyMinimumPluginVersion("2.14.2")) {
   new Notice("This script requires a newer version of Excalidraw. Please install the latest version.");
   return;

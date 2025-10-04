@@ -14,7 +14,6 @@ Features:
 
 ```js
 */
-
 if(!ea.verifyMinimumPluginVersion || !ea.verifyMinimumPluginVersion("2.14.2")) {
   new Notice("This script requires a newer version of Excalidraw. Please install the latest version.");
   return;
@@ -215,9 +214,24 @@ async function run() {
       setActiveTool(excalidrawAPI, currentTool);
     });
 
+    // Hand Tool Button
+    const handToolButton = buttonContainer.createEl("button", {
+      cls: "palm-guard-btn clickable-icon cpg-button-toggled-off",
+      attr: {
+        style: "background-color: var(--interactive-accent); color: var(--text-on-accent);" 
+      }
+    });
+    
+    handToolButton.innerHTML = ea.obsidian.getIcon("hand").outerHTML;
+    handToolButton.addEventListener("click", () => {
+      currentTool = 'hand';
+      setActiveTool(excalidrawAPI, currentTool);
+    });
+
     const customToolsToggle = {
       selection: selectToolButton,
       lasso: selectToolButton,
+      hand: handToolButton,
       freedraw: pencilToolButton,
       eraser: eraserToolButton,
     }

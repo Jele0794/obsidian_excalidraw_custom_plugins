@@ -17,28 +17,18 @@ Usage:
 ```js
 */
 
-
 if(!ea.verifyMinimumPluginVersion || !ea.verifyMinimumPluginVersion("2.14.2")) {
   new Notice("This script requires a newer version of Excalidraw. Please install the latest version.");
   return;
 }
 
-async function run() {
+// Shared color cycling logic
+const cycleColors = async (ea, direction = 1) => {
   const excalidrawAPI = ea.getExcalidrawAPI();
   
   // Define the color cycle
-  const colors = ["#1e1e1e", "#1971c2", "#2f9e44", "#f08c00"]; // black, blue, green, 
+  const colors = ["#1e1e1e", "#1971c2", "#2f9e44", "#f08c00"]; // black, blue, green, orange
   const colorNames = ["Black", "Blue", "Green", "Orange"];
-  
-  // Get current settings
-  const CURRENT_COLOR_INDEX = "Current Color Index";
-  let settings = ea.getScriptSettings() || {};
-  
-  // Initialize color index if not set
-  if(!settings[CURRENT_COLOR_INDEX]) {
-    settings[CURRENT_COLOR_INDEX] = { value: 0 };
-    await ea.setScriptSettings(settings);
-  }
   
   // Get selected elements
   const selectedElements = ea.getViewSelectedElements();
@@ -55,15 +45,23 @@ async function run() {
     }
   }
   
-  // Get current color index and cycle to next
-  let currentIndex = settings[CURRENT_COLOR_INDEX].value;
-  const nextIndex = (currentIndex + 1) % colors.length;
+  // Get current color index from shared object
+  const currentIndex = window.cycleColorsShared.currentColorIndex || 0;
+  let nextIndex;
+  
+  if (direction === 1) {
+    // Cycle forward (left to right)
+    nextIndex = (currentIndex + 1) % colors.length;
+  } else {
+    // Cycle backward (right to left)
+    nextIndex = (currentIndex - 1 + colors.length) % colors.length;
+  }
+  
   const nextColor = colors[nextIndex];
   const nextColorName = colorNames[nextIndex];
   
-  // Update settings with new color index
-  settings[CURRENT_COLOR_INDEX].value = nextIndex;
-  await ea.setScriptSettings(settings);
+  // Update shared color index
+  window.cycleColorsShared.currentColorIndex = nextIndex;
   
   if (selectedElements.length === 0) {
     // If no elements are selected and pencil tool is active, update the stroke color
@@ -89,6 +87,32 @@ async function run() {
     
     new Notice(`${selectedElements.length} element(s) changed to ${nextColorName}`);
   }
+};
+
+// Export functions to window for use by other scripts
+// Check if functions don't exist yet (not just the object)
+if (!window.cycleColorsShared || !window.cycleColorsShared.forward) {
+  const skipExecution = window.cycleColorsShared?.skipExecution || false;
+  const currentColorIndex = window.cycleColorsShared?.currentColorIndex ?? 0;
+  
+  window.cycleColorsShared = {
+    forward: async (ea) => {
+      await cycleColors(ea, 1);
+    },
+    backward: async (ea) => {
+      await cycleColors(ea, -1);
+    },
+    skipExecution: skipExecution,
+    currentColorIndex: currentColorIndex
+  };
 }
 
-run();
+// Execute forward cycling (only if this script was called directly, not as a library)
+const shouldExecute = !window.cycleColorsShared.skipExecution;
+
+// Reset the flag for future calls
+window.cycleColorsShared.skipExecution = false;
+
+if (shouldExecute) {
+  await window.cycleColorsShared.forward(ea);
+}

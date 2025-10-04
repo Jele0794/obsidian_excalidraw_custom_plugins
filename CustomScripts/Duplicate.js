@@ -72,7 +72,7 @@ for (const clone of clones) {
 const sceneElements = excalidrawAPI.getSceneElements();
 const newSceneElements = [...sceneElements, ...clones];
 
-excalidrawAPI.updateScene({ elements: newSceneElements, commitToHistory: true });
+excalidrawAPI.updateScene({ elements: newSceneElements, captureUpdate: 'IMMEDIATELY' });
 
 // Select the newly created elements in the view
 const newIds = clones.map(c => c.id);

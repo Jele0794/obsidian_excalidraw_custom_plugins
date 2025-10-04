@@ -217,6 +217,7 @@ async function run() {
 
     const customToolsToggle = {
       selection: selectToolButton,
+      lasso: selectToolButton,
       freedraw: pencilToolButton,
       eraser: eraserToolButton,
     }
@@ -228,7 +229,6 @@ async function run() {
     }
 
     unsuscribeOnChange = excalidrawAPI.onChange((e, as, f) => {
-
       if (as?.activeTool?.type != null
           && customToolsToggle[as?.activeTool?.type] != null) {
           toggleButtonVisibleStateClass(customToolsToggle, as?.activeTool?.type);
